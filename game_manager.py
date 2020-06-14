@@ -14,20 +14,26 @@ class GameManager:
         self._water_bubbles_to_remove = set()
         self._random_number = 3
         self._frames_since_bubble_spawn = 0
-        self.speed_of_water_bubble_spawn = 10
+        self.speed_of_water_bubble_spawn = 100
+        self.pause = False
 
     def update(self):
         """Update the game logic (after player input has been processed) every frame"""
+        if self.pause:
+            return
+
         self._frames_since_bubble_spawn += 1
-        self.crab.refresh_position_on_platform(self.platform)
 
         self._water_bubbles_to_remove = []
         for bubble in self.water_bubbles:
             bubble.update()
             if self.crab.can_catch_water_bubble(bubble):
                 self._water_bubbles_to_remove.append(bubble)
+                self.platform.go_down()
             if bubble.is_out_of_screen(self.SCREEN_HEIGHT):
                 self._water_bubbles_to_remove.append(bubble)
+                self.platform.go_up()
+        self.crab.refresh_position_on_platform(self.platform)
 
         # Clean bubbles
         for water_bubble in self._water_bubbles_to_remove:

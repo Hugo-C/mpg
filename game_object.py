@@ -30,12 +30,19 @@ class Crab(GameObject):
 
     def can_catch_water_bubble(self, water_bubble):
         x_diff = abs(water_bubble.x - (self.x + self.size[0]/2))
-        y_diff = abs(water_bubble.y - self.y + 5)
-        return x_diff + y_diff < 30
+        y_diff = abs(water_bubble.y - self.y - 15)
+        return x_diff + y_diff < 40
 
 
 class Platform(GameObject):
     """Platform on which the crab is standing"""
+    max_height = 580
+
+    def go_up(self):
+        self.y -= 15
+
+    def go_down(self):
+        self.y = min(self.y + 5, self.max_height)
 
 
 class WaterBubble(GameObject):

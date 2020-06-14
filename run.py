@@ -19,6 +19,8 @@ def init():
 
 def update(state):
     game_manager = state['game_manager']
+    if game_manager.pause:
+        return
     crab = game_manager.crab
 
     x = qs.mouse_pos()['x']
@@ -43,13 +45,19 @@ def draw(state):
     platform = game_manager.platform
 
     qs.clear(state['color'])
-    qs.rect(platform.to_rect(), color=BLACK)
+
     qs.anim(CRAB_ANIM, rect=crab.to_rect())
     qs.anim(CRAB_ANIM, rect=crab.to_rect())
     for water_bubble in game_manager.water_bubbles:
         qs.circ([water_bubble.x, water_bubble.y], water_bubble.radius, color=BLUE)
 
+    qs.rect(platform.to_rect(), color=BLACK)
+    screen_size = [GameManager.SCREEN_WIDTH, GameManager.SCREEN_HEIGHT]
+    water_rect = [[0, platform.y + platform.size[1]], screen_size]
+    qs.rect(water_rect, color=BLUE)
 
 def event(state, event):
     game_manager = state['game_manager']
 
+    if event['event'] == 'key' and event['key'] == 'Escape' and event['state'] == 'Pressed':
+        game_manager.pause = not game_manager.pause
