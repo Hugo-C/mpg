@@ -37,12 +37,30 @@ class Crab(GameObject):
 class Platform(GameObject):
     """Platform on which the crab is standing"""
     max_height = 580
+    min_up = 10
+    max_up = 30
+    min_down = 10
+    max_down = 100
+
+    def __init__(self, x, y, size, screen_height):
+        GameObject.__init__(self, x=x, y=y, size=size)
+        self.y_target = y
+        self.screen_height = screen_height
+
+    def refresh_height(self):
+        if self.y < self.y_target:
+            self.y += 1
+        elif self.y > self.y_target:
+            self.y -= 1
 
     def go_up(self):
-        self.y -= 15
+        up_by = self.min_up + (self.y_target / self.screen_height * (self.max_up - self.min_up))
+        self.y_target -= up_by
 
     def go_down(self):
-        self.y = min(self.y + 5, self.max_height)
+        down_by = self.min_down + (1 - self.y_target / self.screen_height) * (self.max_down - self.min_down)
+        self.y_target += down_by
+        self.y_target = min(self.y_target, self.max_height)
 
 
 class WaterBubble(GameObject):
@@ -55,8 +73,8 @@ class WaterBubble(GameObject):
     def update(self):
         self.y += self.speed
 
-    def is_out_of_screen(self, screen_height):
-        return self.y > screen_height + self.radius
+    def is_below(self, gameobject):
+        return self.y >= gameobject.y + self.radius
 
 
 

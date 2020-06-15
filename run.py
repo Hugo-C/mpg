@@ -52,9 +52,10 @@ def draw(state):
         qs.circ([water_bubble.x, water_bubble.y], water_bubble.radius, color=BLUE)
 
     qs.rect(platform.to_rect(), color=BLACK)
-    screen_size = [GameManager.SCREEN_WIDTH, GameManager.SCREEN_HEIGHT]
+    screen_size = [GameManager.SCREEN_WIDTH, GameManager.SCREEN_HEIGHT * 2]
     water_rect = [[0, platform.y + platform.size[1]], screen_size]
     qs.rect(water_rect, color=BLUE)
+
 
 def event(state, event):
     game_manager = state['game_manager']
