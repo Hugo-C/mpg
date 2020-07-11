@@ -13,7 +13,6 @@ def init():
     ])
     return {
         'game_manager': GameManager(),
-        'color': [0, 0, 0, 1],
     }
 
 
@@ -31,20 +30,13 @@ def update(state):
         crab.go_right(coefficient=(x - half_screen_width) / half_screen_width)
     game_manager.update()
 
-    state['color'][0] += 0.001
-    state['color'][1] += 0.002
-    state['color'][2] += 0.003
-    state['color'][0] %= 1
-    state['color'][1] %= 1
-    state['color'][2] %= 1
-
 
 def draw(state):
     game_manager = state['game_manager']
     crab = game_manager.crab
     platform = game_manager.platform
 
-    qs.clear(state['color'])
+    qs.clear(game_manager.background_color.format())
 
     qs.anim(CRAB_ANIM, rect=crab.to_rect())
     qs.anim(CRAB_ANIM, rect=crab.to_rect())

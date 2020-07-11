@@ -1,3 +1,4 @@
+from color import BackgroundColor
 from common import random, norm_random, lerp
 from game_object import Crab, Platform, WaterBubble
 
@@ -26,6 +27,12 @@ class GameManager:
         self.speed_of_water_bubble_spawn = self.BUBBLE_INITIAL_SPAWN_SPEED
         self.pause = False
 
+        self.background_color = BackgroundColor()
+
+        self.up_0 = True
+        self.up_1 = True
+        self.up_2 = True
+
     def update(self):
         """Update the game logic (after player input has been processed) every frame"""
         if self.pause:
@@ -49,6 +56,8 @@ class GameManager:
         self.platform.refresh_height()
         self.crab.refresh_position_on_platform(self.platform)
 
+        self.background_color.update(self.player_situation())
+
         # Clean bubbles
         for water_bubble in self._water_bubbles_to_remove:
             if water_bubble in self.water_bubbles:
@@ -71,6 +80,12 @@ class GameManager:
         x = norm_random(self._random_number, self.SCREEN_WIDTH) + 30
         self.water_bubbles.append(WaterBubble(x=x, y=-25, size=[800, 10], radius=25))
         self._frames_since_bubble_spawn = 0
+
+    def player_situation(self):
+        """Return a value between 0 and 1
+        the closer to 0, the more the player is close to loose
+        """
+        return self.platform.y / self.SCREEN_WIDTH
 
     def restart(self):
         self.water_bubbles = []
