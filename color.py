@@ -24,11 +24,12 @@ class BackgroundColor(Color):
 
     def update(self, player_situation):
         """Simple color roll, speed up when the player is in a bad situation"""
-        situation = max(0.5, player_situation * 1.1)  # Transform the value to soften the effect
+        situation = (1 - player_situation) * 20
 
-        r_change = 0.0001 ** situation
+        change = 0.0001 * situation
+        r_change = change
         if self.r_is_going_up:
-            if self.r + r_change >= 1:
+            if self.r + r_change >= 1.:
                 self.r_is_going_up = False
             else:
                 self.r += r_change
@@ -38,9 +39,9 @@ class BackgroundColor(Color):
             else:
                 self.r -= r_change
 
-        b_change = 0.00015 ** situation
+        b_change = change + 0.0001
         if self.b_is_going_up:
-            if self.g + b_change >= 1:
+            if self.g + b_change >= 1.:
                 self.b_is_going_up = False
             else:
                 self.g += b_change
@@ -50,9 +51,9 @@ class BackgroundColor(Color):
             else:
                 self.g -= b_change
 
-        g_change = 0.0002 ** situation
+        g_change = change + 0.0002
         if self.g_is_going_up:
-            if self.b + g_change >= 1:
+            if self.b + g_change >= 1.:
                 self.g_is_going_up = False
             else:
                 self.b += g_change
