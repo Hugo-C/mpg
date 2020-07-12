@@ -3,6 +3,7 @@ class GameObject:
         self.x = x
         self.y = y
         self.size = size
+        self.half_width = self.size[0] / 2.
 
     def to_rect(self):
         """Return the gameobject to be display by qs.anim"""
@@ -33,8 +34,14 @@ class Crab(GameObject):
         self.y = platform.y - self.size[1]
 
     def can_catch_water_bubble(self, water_bubble):
-        x_diff = abs(water_bubble.x - (self.x + self.size[0]/2))
-        y_diff = abs(water_bubble.y - self.y - 15)
+        y_diff = water_bubble.y - self.y - 15
+        if y_diff < 0:  # Handmade abs for performances
+            y_diff = -y_diff
+        if y_diff > 40:
+            return False  # Hack for performances
+        x_diff = water_bubble.x - (self.x + self.half_width)
+        if x_diff < 0:
+            x_diff = -x_diff
         return x_diff + y_diff < 40
 
 
@@ -62,7 +69,7 @@ class Platform(GameObject):
         self.y_target -= up_by
 
     def go_down(self):
-        down_by = self.min_down + (1 - self.y_target / self.screen_height) * (self.max_down - self.min_down)
+        down_by = self.min_down + (1. - self.y_target / self.screen_height) * (self.max_down - self.min_down)
         self.y_target += down_by
         self.y_target = min(self.y_target, self.max_height)
 

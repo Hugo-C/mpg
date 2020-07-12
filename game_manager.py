@@ -9,7 +9,7 @@ class GameManager:
     SCREEN_HEIGHT = 600
     PLATFORM_INITIAL_HEIGHT = 550
     BUBBLE_INITIAL_SPAWN_SPEED = 100
-    BUBBLE_MAX_SPAWN_SPEED = 20
+    BUBBLE_MAX_SPAWN_SPEED = 50
     BUBBLE_SPAWN_ACCELERATION = 0.05
 
     def __init__(self):
@@ -21,7 +21,6 @@ class GameManager:
             screen_height=self.SCREEN_HEIGHT,
         )
         self.water_bubbles = []
-        self._water_bubbles_to_remove = set()
         self._random_number = 3
         self._frames_since_bubble_spawn = 0
         self.speed_of_water_bubble_spawn = self.BUBBLE_INITIAL_SPAWN_SPEED
@@ -44,24 +43,22 @@ class GameManager:
 
         self._frames_since_bubble_spawn += 1
 
-        self._water_bubbles_to_remove = []
+        water_bubbles_to_keep = []
         for bubble in self.water_bubbles:
             bubble.update()
-            if self.crab.can_catch_water_bubble(bubble):
-                self._water_bubbles_to_remove.append(bubble)
-                self.platform.go_down()
             if bubble.is_below(self.platform):
-                self._water_bubbles_to_remove.append(bubble)
                 self.platform.go_up()
+            elif self.crab.can_catch_water_bubble(bubble):
+                self.platform.go_down()
+            else:
+                water_bubbles_to_keep.append(bubble)
         self.platform.refresh_height()
         self.crab.refresh_position_on_platform(self.platform)
 
         self.background_color.update(self.player_situation())
 
         # Clean bubbles
-        for water_bubble in self._water_bubbles_to_remove:
-            if water_bubble in self.water_bubbles:
-                self.water_bubbles.remove(water_bubble)
+        self.water_bubbles = water_bubbles_to_keep
 
         if self._frames_since_bubble_spawn > self.speed_of_water_bubble_spawn:
             self.spawn_water_bubble()
@@ -75,10 +72,12 @@ class GameManager:
         c = actual * (1 - self.BUBBLE_SPAWN_ACCELERATION)
         self.speed_of_water_bubble_spawn = lerp(highest, lowest, c)
 
-    def spawn_water_bubble(self):
-        self._random_number = random(self._random_number)
-        x = norm_random(self._random_number, self.SCREEN_WIDTH) + 30
-        self.water_bubbles.append(WaterBubble(x=x, y=-25, size=[800, 10], radius=25))
+    def spawn_water_bubble(self, x=None, y=-25):
+        if not x:
+            self._random_number = random(self._random_number)
+            x = norm_random(self._random_number)
+        x = x * self.SCREEN_WIDTH + 30
+        self.water_bubbles.append(WaterBubble(x=x, y=y, size=[800, 10], radius=25))
         self._frames_since_bubble_spawn = 0
 
     def player_situation(self):

@@ -5,6 +5,8 @@ from game_manager import GameManager
 
 CRAB_ANIM = 'crab-up'
 
+DEFAULT_UPDATE_RATE = 14
+
 
 def init():
     qs.init_anims([
@@ -14,6 +16,10 @@ def init():
     return {
         'game_manager': GameManager(),
     }
+
+
+def onload(state):
+    qs.set_update_rate(DEFAULT_UPDATE_RATE)
 
 
 def update(state):
@@ -52,5 +58,12 @@ def draw(state):
 def event(state, event):
     game_manager = state['game_manager']
 
-    if event['event'] == 'key' and event['key'] == 'Escape' and event['state'] == 'Pressed':
-        game_manager.pause = not game_manager.pause
+    if event['event'] == 'key' and event['state'] == 'Pressed':
+        if event['key'] == 'Escape':
+            game_manager.pause = not game_manager.pause
+        elif event['key'] == 'Right':
+            qs.set_update_rate(qs.update_rate() - 2)
+        elif event['key'] == 'Left':
+            qs.set_update_rate(qs.update_rate() + 2)
+        elif event['key'] == 'Space':
+            qs.set_update_rate(DEFAULT_UPDATE_RATE)
