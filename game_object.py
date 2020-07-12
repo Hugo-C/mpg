@@ -15,15 +15,19 @@ class GameObject:
 
 class Crab(GameObject):
 
-    def __init__(self, x, y, size):
+    def __init__(self, x, y, size, min_x=0, max_x=800):
         GameObject.__init__(self, x=x, y=y, size=size)  # super() is not supported by pyckitup 0.1
         self.speed = 15
+        self.min_x = min_x
+        self.max_x = max_x
 
     def go_left(self, coefficient=1):
         self.x -= self.speed * coefficient
+        self.x = max(self.min_x - self.size[0], self.x)
 
     def go_right(self, coefficient=1):
         self.x += self.speed * coefficient
+        self.x = min(self.max_x, self.x)
 
     def refresh_position_on_platform(self, platform):
         self.y = platform.y - self.size[1]
