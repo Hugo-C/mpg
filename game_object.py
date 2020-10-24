@@ -13,6 +13,12 @@ class GameObject:
         """Update the game object every frame"""
         pass
 
+    def reset_values(self, *, x=0, y=0, size=None):
+        self.x = x
+        self.y = y
+        self.size = size
+        self.half_width = self.size[0] / 2.
+
 
 class Crab(GameObject):
 
@@ -88,5 +94,26 @@ class WaterBubble(GameObject):
     def is_below(self, gameobject):
         return self.y >= gameobject.y + self.radius
 
+    def reset_values(self, *, x=0, y=0, size=None, radius=0):
+        GameObject.reset_values(self, x=x, y=y, size=size)
+        self.radius = radius
+
+
+class WaterBubblePool:
+    """Pool of water bubble used to avoid creating/destroying object in repetition"""
+
+    def __init__(self):
+        self.unused_water_bubble = []
+
+    def add(self, water_bubble):
+        self.unused_water_bubble.append(water_bubble)
+
+    def get(self, **kwargs):
+        if len(self.unused_water_bubble) > 1:
+            water_bubble = self.unused_water_bubble.pop()
+            water_bubble.reset_values(**kwargs)
+            return water_bubble
+        else:
+            return WaterBubble(**kwargs)
 
 

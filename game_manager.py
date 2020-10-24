@@ -1,6 +1,6 @@
 from color import BackgroundColor
 from common import random, norm_random, lerp
-from game_object import Crab, Platform, WaterBubble
+from game_object import Crab, Platform, WaterBubble, WaterBubblePool
 
 
 class GameManager:
@@ -20,6 +20,7 @@ class GameManager:
             size=[self.SCREEN_WIDTH, 10],
             screen_height=self.SCREEN_HEIGHT,
         )
+        self.water_bubbles_pool = WaterBubblePool()
         self.water_bubbles = []
         self._random_number = 3
         self._frames_since_bubble_spawn = 0
@@ -48,8 +49,10 @@ class GameManager:
             bubble.update()
             if bubble.is_below(self.platform):
                 self.platform.go_up()
+                self.water_bubbles_pool.add(bubble)
             elif self.crab.can_catch_water_bubble(bubble):
                 self.platform.go_down()
+                self.water_bubbles_pool.add(bubble)
             else:
                 water_bubbles_to_keep.append(bubble)
         self.platform.refresh_height()
@@ -77,7 +80,8 @@ class GameManager:
             self._random_number = random(self._random_number)
             x = norm_random(self._random_number)
         x = x * self.SCREEN_WIDTH + 30
-        self.water_bubbles.append(WaterBubble(x=x, y=y, size=[800, 10], radius=25))
+        new_water_bubble = self.water_bubbles_pool.get(x=x, y=y, size=[800, 10], radius=25)
+        self.water_bubbles.append(new_water_bubble)
         self._frames_since_bubble_spawn = 0
 
     def player_situation(self):
