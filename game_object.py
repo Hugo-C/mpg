@@ -21,13 +21,14 @@ class Crab(GameObject):
         self.speed = 15
         self.min_x = min_x - self.size[0]  # take into account sprite size
         self.max_x = max_x
+        self.move_smoother = 0.9
 
     def go_left(self, coefficient=1):
-        self.x -= self.speed * coefficient
+        self.x -= (self.speed * coefficient) ** self.move_smoother
         self.x = max(self.min_x, self.x)
 
     def go_right(self, coefficient=1):
-        self.x += self.speed * coefficient
+        self.x += (self.speed * coefficient) ** self.move_smoother
         self.x = min(self.max_x, self.x)
 
     def refresh_position_on_platform(self, platform):
